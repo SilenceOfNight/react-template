@@ -1,9 +1,11 @@
-import React from 'react';
+import React from "react";
 
 const App = () => {
-    return (
-        <div className="app">Hello React!</div>
-    );
-}
+  return (
+    <div className="app">
+      Hello React!<button>Click</button>
+    </div>
+  );
+};
 
 export default App;
