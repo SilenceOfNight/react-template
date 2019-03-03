@@ -178,5 +178,10 @@
     "react/void-dom-elements-no-children": "error",
     "semi": ["error", "always"],
     "space-before-blocks": ["error", "always"]
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
   }
 }
