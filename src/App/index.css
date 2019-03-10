@@ -1,0 +1,14 @@
+.app-container {
+  display: flex;
+}
+
+.app-sider {
+  background: #f0f;
+  flex: 0 0 300px;
+  /* transform: translate(50px, 50px); */
+}
+
+.app-content {
+  background: #ff0;
+  flex: 1 1 auto;
+}

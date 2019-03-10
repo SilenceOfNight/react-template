@@ -1,5 +1,11 @@
 {
   "author": "",
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
   "bugs": {
     "url": "https://github.com/SilenceOfNight/react-template/issues"
   },
@@ -15,7 +21,7 @@
     "@babel/preset-react": "^7.0.0",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.5",
-    "clean-webpack-plugin": "^1.0.1",
+    "clean-webpack-plugin": "^2.0.0",
     "cross-env": "^5.2.0",
     "css-loader": "^2.1.0",
     "eslint": "^5.14.1",
@@ -30,11 +36,16 @@
     "less-loader": "^4.1.0",
     "mini-css-extract-plugin": "^0.5.0",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
+    "pnp-webpack-plugin": "^1.4.1",
+    "postcss-flexbugs-fixes": "^4.1.0",
+    "postcss-loader": "^3.0.0",
+    "postcss-preset-env": "^6.6.0",
     "style-loader": "^0.23.1",
     "uglifyjs-webpack-plugin": "^2.1.2",
     "webpack": "^4.29.5",
     "webpack-cli": "^3.2.3",
     "webpack-dev-server": "^3.2.1",
+    "webpack-manifest-plugin": "^2.0.4",
     "webpack-merge": "^4.2.1"
   },
   "homepage": "https://github.com/SilenceOfNight/react-template#readme",
@@ -47,8 +58,8 @@
     "url": "git+https://github.com/SilenceOfNight/react-template.git"
   },
   "scripts": {
-    "build": "cross-env NODE_ENV=production webpack --config config/webpack.config-prod.js",
-    "start": "cross-env NODE_ENV=development webpack-dev-server --config config/webpack.config-dev.js"
+    "build": "cross-env NODE_ENV=production webpack --config config/webpack.config.js",
+    "start": "cross-env NODE_ENV=development webpack-dev-server --config config/webpack.config.dev.js"
   },
   "version": "1.0.0"
 }
