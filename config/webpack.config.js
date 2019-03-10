@@ -6,6 +6,8 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+  .BundleAnalyzerPlugin;
 // const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin');
 const webpack = require('webpack');
 
@@ -226,5 +228,6 @@ module.exports = {
           ? 'static/css/[name].[contenthash:8].chunk.css'
           : 'static/css/[name].chunk.css',
       }),
+    !isEnvProduction && new BundleAnalyzerPlugin(),
   ].filter(Boolean),
 };
