@@ -1,5 +1,4 @@
 import React from 'react';
-import imageSrc from '../public/asserts/bg.jpg';
 import './App.css';
 
 const App = () => {
@@ -7,7 +6,6 @@ const App = () => {
     <div className="app">
       Hello React!
       <button type="submit">Click</button>
-      <img src={imageSrc} alt="" />
     </div>
   );
 };
