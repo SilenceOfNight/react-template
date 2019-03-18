@@ -1,6 +1,7 @@
 const paths = require('./paths');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const InlineManifestWebpackPlugin = require('inline-manifest-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
@@ -16,12 +17,17 @@ const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css$/;
 const lessRegex = /\.less$/;
 const lessModuleRegex = /\.module\.less$/;
-const cssModuleLocalIdentName = '[name]_[local]-[hash:base64:5]';
 const imageRegex = /\.(png|svg|jpg|gif)$/;
 const fontIconRegex = /\.(woff|woff2|eot|ttf|otf)$/;
+const cssModuleLocalIdentName = '[name]_[local]-[hash:base64:5]';
 
 const isEnvProduction = process.env.NODE_ENV === 'production';
 // const isEnvDevelopment = process.env.NODE_ENV === 'development';
+const useCssModule = false;
+const useLess = false;
+const useLessModule = false;
+const sourceMap = true;
+const startAnalyze = false;
 
 const getStyleLoaders = (cssOptions, preProcessor) => {
   const loaders = [
@@ -43,7 +49,7 @@ const getStyleLoaders = (cssOptions, preProcessor) => {
             stage: 3,
           }),
         ],
-        sourceMap: isEnvProduction,
+        sourceMap: sourceMap,
       },
     },
   ].filter(Boolean);
@@ -52,7 +58,7 @@ const getStyleLoaders = (cssOptions, preProcessor) => {
     loaders.push({
       loader: require.resolve(preProcessor),
       options: {
-        sourceMap: isEnvProduction,
+        sourceMap: sourceMap,
       },
     });
   }
@@ -76,6 +82,9 @@ module.exports = {
     path: paths.appDist,
   },
   resolve: {
+    alias: {
+      '@': paths.appSrc,
+    },
     modules: [ paths.appSrc, paths.appNodeModules ],
     plugins: [ PnpWebpackPlugin ],
   },
@@ -115,37 +124,37 @@ module.exports = {
         exclude: cssModuleRegex,
         use: getStyleLoaders({
           importLoaders: 1,
-          sourceMap: isEnvProduction,
+          sourceMap: sourceMap,
         }),
       },
-      {
+      useCssModule && {
         test: cssModuleRegex,
         use: getStyleLoaders({
           modules: true,
           localIdentName: cssModuleLocalIdentName,
           importLoaders: 1,
-          sourceMap: isEnvProduction,
+          sourceMap: sourceMap,
         }),
       },
-      {
+      useLess && {
         test: lessRegex,
         exclude: lessModuleRegex,
         use: getStyleLoaders(
           {
             importLoaders: 2,
-            sourceMap: isEnvProduction,
+            sourceMap: sourceMap,
           },
           'less-loader'
         ),
       },
-      {
+      useLessModule && {
         test: lessModuleRegex,
         use: getStyleLoaders(
           {
             modules: true,
             localIdentName: cssModuleLocalIdentName,
             importLoaders: 2,
-            sourceMap: isEnvProduction,
+            sourceMap: sourceMap,
           },
           'less-loader'
         ),
@@ -158,29 +167,58 @@ module.exports = {
             options: {
               limit: 10000,
               name: isEnvProduction
-                ? 'static/media/[name].[hash:8].[ext]'
-                : 'static/media/[name].[ext]',
+                ? 'static/asserts/[name].[hash:8].[ext]'
+                : 'static/asserts/[name].[ext]',
             },
           },
         ],
       },
       {
         test: fontIconRegex,
-        use: [ 'file-loader' ],
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: isEnvProduction
+                ? 'static/asserts/[name][hash:8].[ext]'
+                : 'static/asserts/[name].[ext]',
+            },
+          },
+        ],
       },
-    ],
+    ].filter(Boolean),
   },
   optimization: {
     minimize: isEnvProduction,
     minimizer: [
       new UglifyJsPlugin({
+        // 过滤以 .min.js 结尾的文件（PS：以.min.js 结尾的文件已压缩，不需要二次压缩）。
+        exclude: /\.min\.js$/,
         cache: true,
+        // 开启并行压缩，重复利用CPU 性能
         parallel: true,
-        sourceMap: true, // set to true if you want JS source maps
+        sourceMap: sourceMap,
+        uglifyOptions: {
+          ie8: false,
+          ecma: 8,
+          mangle: true,
+          output: { comments: false },
+          compress: {
+            warnings: false,
+            // eslint-disable-next-line camelcase
+            drop_debugger: true,
+          },
+        },
       }),
+      // new ParallelUglifyPlugin({
+      //   sourceMap: sourceMap,
+      // }),
       new OptimizeCSSAssetsPlugin({}),
     ],
+    // 分离出manifest代码块（webpack 编译运行时的代码）
+    runtimeChunk: 'single',
     splitChunks: {
+      name: 'vendors',
       chunks: 'all',
     },
   },
@@ -195,6 +233,7 @@ module.exports = {
           template: paths.appHtml,
           filename: 'index.html',
           inject: true,
+          chunks: [ 'runtime', 'app' ],
         },
         isEnvProduction
           ? {
@@ -214,8 +253,9 @@ module.exports = {
           : undefined
       )
     ),
+    // manifest 代码块比较小，直接插入到index.html中，避免1次额外的HTTP 请求。
+    new InlineManifestWebpackPlugin('runtime'),
     !isEnvProduction && new webpack.HotModuleReplacementPlugin(),
-    // isEnvProduction && new ParallelUglifyPlugin({}),
     new ManifestPlugin({
       fileName: 'asset-manifest.json',
     }),
@@ -228,6 +268,6 @@ module.exports = {
           ? 'static/css/[name].[contenthash:8].chunk.css'
           : 'static/css/[name].chunk.css',
       }),
-    !isEnvProduction && new BundleAnalyzerPlugin(),
+    startAnalyze && new BundleAnalyzerPlugin(),
   ].filter(Boolean),
 };
