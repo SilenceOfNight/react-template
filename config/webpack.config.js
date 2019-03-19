@@ -213,7 +213,9 @@ module.exports = {
       // new ParallelUglifyPlugin({
       //   sourceMap: sourceMap,
       // }),
-      new OptimizeCSSAssetsPlugin({}),
+      new OptimizeCSSAssetsPlugin({
+        assetNameRegExp: /\.css$/g,
+      }),
     ],
     // 分离出manifest代码块（webpack 编译运行时的代码）
     runtimeChunk: 'single',
@@ -233,7 +235,7 @@ module.exports = {
           template: paths.appHtml,
           filename: 'index.html',
           inject: true,
-          chunks: [ 'runtime', 'app' ],
+          chunks: [ 'runtime', 'vendors', 'app' ],
         },
         isEnvProduction
           ? {
