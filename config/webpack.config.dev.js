@@ -8,6 +8,7 @@ module.exports = merge(config, {
     compress: true,
     port: 3000,
     open: true,
+    overlay: true,
     hot: true,
     // proxy: {
     //   '/api': {
