@@ -3,12 +3,17 @@
     [
       "@babel/preset-env",
       {
+        "useBuiltIns": "usage",
+        "targets": {
+          "ie": 10
+        },
         "modules": false // Tree shaking
       }
     ],
     "@babel/preset-react"
   ],
   "plugins": [
+    ["@babel/plugin-transform-runtime", { "corejs": 2 }],
     ["@babel/plugin-proposal-decorators", { "legacy": true }],
     ["@babel/plugin-proposal-class-properties", { "loose": true }]
   ]

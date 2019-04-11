@@ -70,7 +70,7 @@ module.exports = {
   mode: isEnvProduction ? 'production' : 'development',
   devtool: isEnvProduction ? 'cheap-module-source-map' : 'inline-source-map',
   entry: {
-    app: paths.appIndex,
+    app: [ require.resolve('./polyfill'), paths.appIndex ],
   },
   output: {
     filename: !isEnvProduction
@@ -221,7 +221,7 @@ module.exports = {
     runtimeChunk: 'single',
     splitChunks: {
       name: 'vendors',
-      chunks: 'all',
+      // chunks: 'all',
     },
   },
   plugins: [

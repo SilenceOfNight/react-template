@@ -3,15 +3,17 @@
   "browserslist": [
     ">0.2%",
     "not dead",
-    "not ie <= 11",
+    "ie >= 9",
     "not op_mini all"
   ],
   "bugs": {
     "url": "https://github.com/SilenceOfNight/react-template/issues"
   },
   "dependencies": {
+    "@babel/runtime-corejs2": "^7.4.3",
     "normalize.css": "^8.0.1",
     "react": "^16.8.3",
+    "react-app-polyfill": "^0.2.2",
     "react-dom": "^16.8.3"
   },
   "description": "The webpack template of react",
@@ -19,6 +21,7 @@
     "@babel/core": "^7.3.4",
     "@babel/plugin-proposal-class-properties": "^7.4.0",
     "@babel/plugin-proposal-decorators": "^7.4.0",
+    "@babel/plugin-transform-runtime": "^7.4.3",
     "@babel/preset-env": "^7.3.4",
     "@babel/preset-react": "^7.0.0",
     "babel-eslint": "^10.0.1",
