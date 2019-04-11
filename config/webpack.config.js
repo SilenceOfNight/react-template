@@ -221,7 +221,7 @@ module.exports = {
     runtimeChunk: 'single',
     splitChunks: {
       name: 'vendors',
-      // chunks: 'all',
+      chunks: 'all',
     },
   },
   plugins: [
