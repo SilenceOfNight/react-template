@@ -1,3 +1,4 @@
-dist/
 build/
+dist/
+dll/
 node_modules/

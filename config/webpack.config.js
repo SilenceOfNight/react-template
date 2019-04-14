@@ -1,5 +1,6 @@
 const paths = require('./paths');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const AddAssetHtmlWebpackPlugin = require('add-asset-html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const InlineManifestWebpackPlugin = require('inline-manifest-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -28,6 +29,7 @@ const useLess = false;
 const useLessModule = false;
 const sourceMap = true;
 const startAnalyze = false;
+const useDll = true;
 
 const getStyleLoaders = (cssOptions, preProcessor) => {
   const loaders = [
@@ -249,7 +251,7 @@ module.exports = {
     },
   },
   plugins: [
-    new webpack.ProgressPlugin(),
+    // new webpack.ProgressPlugin(),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin(
       Object.assign(
@@ -259,7 +261,7 @@ module.exports = {
           template: paths.appHtml,
           filename: 'index.html',
           inject: true,
-          chunks: [ 'runtime', 'vendors', 'app' ],
+          chunks: [ 'runtime', 'vendors', 'commons', 'app' ].filter(Boolean),
         },
         isEnvProduction
           ? {
@@ -279,9 +281,18 @@ module.exports = {
           : undefined
       )
     ),
+    useDll &&
+      new AddAssetHtmlWebpackPlugin({
+        filepath: paths.resolveApp('dll/*.dll.js'),
+      }),
+    useDll &&
+      new webpack.DllReferencePlugin({
+        context: paths.appRoot,
+        manifest: paths.appDllManifest,
+      }),
+    !isEnvProduction && new webpack.HotModuleReplacementPlugin(),
     // manifest 代码块比较小，直接插入到index.html中，避免1次额外的HTTP 请求。
     new InlineManifestWebpackPlugin('runtime'),
-    !isEnvProduction && new webpack.HotModuleReplacementPlugin(),
     new ManifestPlugin({
       fileName: 'asset-manifest.json',
     }),
