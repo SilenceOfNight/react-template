@@ -220,8 +220,32 @@ module.exports = {
     // 分离出manifest代码块（webpack 编译运行时的代码）
     runtimeChunk: 'single',
     splitChunks: {
-      name: 'vendors',
       chunks: 'all',
+      minSize: 30000,
+      maxSize: 0,
+      minChunks: 1,
+      maxAsyncRequests: 5,
+      maxInitialRequests: 3,
+      name: true,
+      cacheGroups: {
+        commons: {
+          name: 'commons',
+          minSize: 0,
+          minChunks: 2,
+          priority: 5,
+          reuseExistingChunk: true,
+        },
+        vendors: {
+          name: 'vendors',
+          test: /[\\/]node_modules[\\/]/,
+          priority: -10,
+        },
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true,
+        },
+      },
     },
   },
   plugins: [
